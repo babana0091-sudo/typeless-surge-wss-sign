@@ -18,6 +18,7 @@ installCryptoJsRandomFallback();
 
   const cfg = Object.assign({}, DEFAULTS, parseArgument(typeof $argument === 'string' ? $argument : ''));
   cfg.debug = /^(1|true|yes|on)$/i.test(String(cfg.debug || ''));
+  log('request seen: ' + summarizeUrl(req.url));
 
   const missing = ['userId', 'refreshToken', 'deviceId', 'aesKey', 'sm3Key'].filter((k) => !cfg[k]);
   if (missing.length) {
@@ -29,7 +30,7 @@ installCryptoJsRandomFallback();
   try {
     const rewritten = rewriteTypelessWsUrl(req.url, cfg);
     if (!rewritten || !rewritten.url) {
-      doneUntouched('no_rewrite');
+      doneUntouched('no_rewrite: ' + summarizeUrl(req.url));
       return;
     }
     log('rewrote WSS t: source=Date.now, ts=' + rewritten.timestamp + ', version=' + rewritten.appVersion + ', apiPath=' + rewritten.apiPath + ', encLen=' + rewritten.encryptedLength);
@@ -134,12 +135,21 @@ installCryptoJsRandomFallback();
     return s;
   }
 
+  function summarizeUrl(url) {
+    const parsed = parseUrl(url);
+    if (!parsed) {
+      return String(url || '').replace(/([?&](?:t|token|refreshToken)=)[^&]+/gi, '$1<redacted>').slice(0, 200);
+    }
+    const keys = Object.keys(parseQuery(parsed.query || ''));
+    return `${parsed.scheme}//${parsed.host}${parsed.path}${keys.length ? '?' + keys.join('&') : ''}`;
+  }
+
   function log(msg) {
     if (cfg && cfg.debug) console.log('[TypelessSign] ' + msg);
   }
 
   function doneUntouched(reason) {
-    try { console.log('[TypelessSign] pass-through: ' + reason); } catch (_) {}
+    try { if (!cfg || cfg.debug) console.log('[TypelessSign] pass-through: ' + reason); } catch (_) {}
     $done({});
   }
 })();
