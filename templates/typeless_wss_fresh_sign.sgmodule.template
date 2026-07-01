@@ -1,0 +1,8 @@
+#!name=Typeless WSS Fresh Sign
+#!desc=Rewrite Typeless /ws/rt_voice_flow handshake: use JS Date.now() milliseconds, refresh AES-encrypted t parameter, and force Android app version.
+
+[Script]
+Typeless WSS Fresh Sign = type=http-request,pattern=^(?:https?|wss?):\/\/api\.typeless\.com\/ws\/rt_voice_flow,script-path=https://raw.githubusercontent.com/YOUR_GITHUB_USER/typeless-surge-wss-sign/main/dist/typeless_wss_sign.js,timeout=5,argument=userId=YOUR_USER_ID&refreshToken=YOUR_REFRESH_TOKEN&deviceId=YOUR_DEVICE_ID&aesKey=YOUR_ANDROID_AES_KEY&sm3Key=YOUR_ANDROID_SIGN_KEY&appVersion=android_1.11.0&apiPath=%2Frt_voice_flow&mode=0&debug=1
+
+[MITM]
+hostname = %APPEND% api.typeless.com

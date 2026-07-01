@@ -1,0 +1,15 @@
+{
+  "name": "typeless-surge-wss-sign",
+  "version": "0.1.0",
+  "private": false,
+  "type": "module",
+  "description": "Generic Surge script for rewriting Typeless WSS auth t parameter with local Date.now signing.",
+  "scripts": {
+    "build": "esbuild src/typeless_wss_sign.mjs --bundle --platform=browser --format=iife --target=es2018 --outfile=dist/typeless_wss_sign.js --banner:js=\"// Typeless Surge WSS fresh signer. Generic script; pass private values via Surge module argument.\"",
+    "test": "node test/run_unit_tests.mjs"
+  },
+  "devDependencies": {
+    "crypto-js": "^4.2.0",
+    "esbuild": "^0.27.1"
+  }
+}

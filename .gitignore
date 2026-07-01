@@ -1,0 +1,12 @@
+node_modules/
+.env
+*.local
+*.token
+*.capture
+*.har
+*.pcap
+*.zip
+*.xapk
+*.apk
+# Private Surge modules with live arguments should not be committed.
+*.private.sgmodule
