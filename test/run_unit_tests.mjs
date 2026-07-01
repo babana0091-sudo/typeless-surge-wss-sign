@@ -4,6 +4,13 @@ import assert from 'node:assert/strict';
 import CryptoJS from 'crypto-js';
 
 const bundle = fs.readFileSync(new URL('../dist/typeless_wss_sign.js', import.meta.url), 'utf8');
+const moduleTemplate = fs.readFileSync(new URL('../templates/typeless_wss_fresh_sign.sgmodule.template', import.meta.url), 'utf8');
+const templateScriptLine = moduleTemplate.split(/\r?\n/).find((line) => line.includes('type=http-request'));
+const templateMitmLine = moduleTemplate.split(/\r?\n/).find((line) => line.trim().startsWith('hostname'));
+assert.ok(templateScriptLine, 'module template has a Script rule');
+assert.ok(templateScriptLine.includes('pattern=^(?:https?|wss?):\\/\\/api\\.typeless\\.com\\/ws\\/rt_voice_flow'), 'module template only runs on the Typeless WSS handshake path');
+assert.ok(!templateScriptLine.includes('pattern=^(?:https?|wss?):\\/\\/api\\.typeless\\.com\\/,'), 'module template must not run on all api.typeless.com traffic');
+assert.equal(templateMitmLine?.trim(), 'hostname = %APPEND% api.typeless.com', 'MITM host is limited to api.typeless.com');
 
 function encArg(obj) {
   return Object.entries(obj).map(([k, v]) => `${encodeURIComponent(k)}=${encodeURIComponent(String(v))}`).join('&');
